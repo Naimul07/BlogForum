@@ -17,13 +17,14 @@ class AuthController extends Controller
         $otp = rand(100000,999999);
         try{
             $attribute = $request->validate([
-                'firstName'=>['required','string','required','max:20'],
-                'lastName'=>['required','string','required','max:20'],
+                'firstName'=>['required','string','max:20'],
+                'lastName'=>['required','string','max:20'],
                 'email'=>['required','email','unique:users'],
                 'password'=>['required','min:6','confirmed'],
             ]);
-            $attribute['otp']=$otp;
+            $attribute['otp'] = $otp;
             $attribute['otp_expires_at']=Carbon::now()->addMinutes(10);
+            // dd($attribute);
             $user = User::create($attribute);
             Mail::to($user->email)->queue(new OtpMail($otp));
             Auth::login($user);
