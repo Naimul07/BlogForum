@@ -2,6 +2,8 @@
 
 namespace Database\Factories;
 
+use App\Models\Post;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -18,6 +20,9 @@ class CommentFactory extends Factory
     {
         return [
             //
+            'user_id' => User::factory(), // Creates a user for the comment
+            'post_id' => Post::factory(), // Creates a post for the comment
+            'comment' => $this->faker->paragraph,
         ];
     }
 }

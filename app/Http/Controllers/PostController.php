@@ -33,21 +33,28 @@ class PostController extends Controller
       $attribute = $request->validate([
         'title' => 'required|string|max:255',
         'description' => 'required|string',
-        'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
+        'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048'
       ]);
+
       $attribute['user_id'] = Auth::id();
       $post = Post::create($attribute);
+
       if ($request->hasFile('image')) {
+        
         $imagePath = $request->file('image')->store('images', 'public');
         $post->image = $imagePath;
         $post->save();
       }
       return response()->json($post, 201);
-    } catch (ValidationException $e) {
+    } 
+    
+    catch (ValidationException $e) {
+
       return response()->json([
         'message' => "validation failure",
         'error' => $e->errors()
       ]);
+
     }
   }
 
@@ -56,7 +63,12 @@ class PostController extends Controller
   public function show($id)
   {
     $post = Post::with('user')->findOrFail($id);
-    return response()->json($post, 201);
+    if(!$post)
+    return response()->json([
+      'message'=>'Post Not found',
+    ]);
+
+    return response()->json($post);
   }
 
 
@@ -68,17 +80,25 @@ class PostController extends Controller
     if (Auth::id() !== $post->user_id) {
       return response()->json(['message' => 'Unauthorized'], 403);
     }
+
     try {
+
       $attribute = $request->validate([
         'title' => 'required|string|max:255',
         'description' => 'required|string',
-        'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
+        'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048'
       ]);
+
+
       if ($request->hasFile('image')) {
+        Storage::disk('public')->delete($post->image);
         $imagePath = $request->file('image')->store('images', 'public');
         $attribute['image'] = $imagePath;
       }
+
       $post->update($attribute);
+
+
       return response()->json([
         'message' => "post updated successfully",
         'post' => $post,
@@ -93,14 +113,13 @@ class PostController extends Controller
 
 
   //delete
-  public function destroy($id) {
+  public function destroy($id)
+  {
     $post = Post::findOrFail($id);
-    if($post->user_id !== Auth::id())
-    {
+    if ($post->user_id !== Auth::id()) {
       return response()->json(['message' => 'Unauthorized'], 403);
     }
-    if($post->image)
-    {
+    if ($post->image) {
       Storage::disk('public')->delete($post->image);
     }
     $post->delete();

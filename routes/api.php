@@ -26,4 +26,5 @@ Route::get('/resent/email',[MailVerifyController::class,'Resentemail'])->middlew
 
  Route::middleware(['auth:sanctum','verified'])->group(function(){
     Route::apiResource('post',PostController::class);
+    // Route::put('/post/{post}',[PostController::class,'update']);
 }); 

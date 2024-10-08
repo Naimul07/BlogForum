@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\Comment;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -18,6 +19,8 @@ class CommentReplyFactory extends Factory
     {
         return [
             //
+            'comment_id' => Comment::factory(), // Creates a comment for the reply
+            'reply' => $this->faker->paragraph,
         ];
     }
 }
