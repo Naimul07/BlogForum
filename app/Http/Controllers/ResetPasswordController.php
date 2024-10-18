@@ -19,7 +19,7 @@ class ResetPasswordController extends Controller
             $request->validate([
                 'token' => ['required'],
                 'email' => ['required', 'email'],
-                'password' => ['required', 'min:8', 'confirmed']
+                'password' => ['required', 'min:6', 'confirmed']
             ]);
 
             $status = Password::reset(
@@ -39,7 +39,7 @@ class ResetPasswordController extends Controller
         } catch (ValidationException $e) {
             return response()->json([
                 'error' => $e->errors(),
-            ]);
+            ],422);
         }
 
     }
@@ -58,11 +58,11 @@ class ResetPasswordController extends Controller
                     'message' => 'reset link sent to your email'
                 ]);
             }
-            return response()->json(['message' => 'Unable to send reset link']);
+            return response()->json(['message' => 'Unable to send reset link'],400);
         } catch (ValidationException $e) {
             return response()->json([
                 'error' => $e->errors(),
-            ]);
+            ],422);
         }
     }
 }

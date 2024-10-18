@@ -38,14 +38,14 @@ class MailVerifyController extends Controller
         } catch (ValidationException $e) {
             return response()->json([
                 'error' => $e->errors()
-            ]);
+            ],422);
         }
 
     }
     public function Resentemail(Request $request)
     {
         if ($request->user()->hasVerifiedEmail()) {
-            return response()->json(['message' => 'Email already verified.']);
+            return response()->json(['message' => 'Email already verified.'],409);
         }
         $otp = rand(100000, 999999); // email verification otp random generator
         $user = $request->user();

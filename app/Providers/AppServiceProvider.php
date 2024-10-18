@@ -24,7 +24,7 @@ class AppServiceProvider extends ServiceProvider
         //
         Model::preventLazyLoading();
         ResetPassword::createUrlUsing(function ($user, string $token) {
-            return 'http://localhost:5173/api/password/reset?token=' . $token . '&email=' . urlencode($user->email);
+            return 'http://localhost:5173/password/reset?token=' . $token . '&email=' . urlencode($user->email);
         });
     }
 }

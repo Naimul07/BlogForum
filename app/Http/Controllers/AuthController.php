@@ -32,7 +32,8 @@ class AuthController extends Controller
             return response()->json([
                 'message'=>'User Registered Successfully',
                 'token'=>$token,
-                'email_verified_at'=>$user->hasVerifiedEmail(),
+                'user'=>$user,
+                // 'email_verified_at'=>$user->hasVerifiedEmail(),
             ]);
         }
         catch(ValidationException $e)
@@ -40,7 +41,7 @@ class AuthController extends Controller
             return response()->json([
                 'message'=>'Error occured',
                 'errors'=>$e->errors(),
-            ]);
+            ],422);
         }
     }
     public function login(Request $request)
@@ -55,23 +56,25 @@ class AuthController extends Controller
             {
                 return response()->json([
                     'message'=>'Invalid Credential',
-                ]);
+                ],401);
             }
             $user = $request->user();
             $token = $user->createToken('auth')->plainTextToken;
             return response()->json([
-                'message'=>'User Registered Successfully',
+                'message'=>'User loged in Successfully',
                 'token'=>$token,
-                'email_verified_at'=>$user->hasVerifiedEmail(),
+                // 'email_verified_at'=>$user->hasVerifiedEmail(),
+                'user'=>$user,
+
             ]);
-           
+
         } catch (ValidationException $e) {
             return response()->json([
                 'message'=>'Error occured',
                 'errors'=>$e->errors(),
-            ]);
+            ],422);
         }
-        
+
     }
     public function logout(Request $request)
     {
@@ -80,6 +83,6 @@ class AuthController extends Controller
         return response()->json([
             'message' => 'Logged out successfully',
         ], 200);
-        
+
     }
 }
