@@ -34,6 +34,9 @@ class User extends Authenticatable implements MustVerifyEmail
     protected $hidden = [
         'password',
         'remember_token',
+        'otp', 
+        'otp_expires_at',
+        
     ];
 
     /**
