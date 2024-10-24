@@ -24,7 +24,7 @@ class PostController extends Controller
   public function index()
   {
     // $Post = Post::latest()->with('user')->paginate(15);
-    $Post = Post::withCount(['comments', 'reactions'])->latest()->with('user')->paginate(15);
+    $Post = Post::withCount(['comments', 'reactions','replies'])->latest()->with('user')->paginate(15);
     /* $posts = DB::table('posts')
     ->join('users', 'posts.user_id', '=', 'users.id') // Join users table
     ->leftJoin('comments', 'posts.id', '=', 'comments.post_id') // Left join comments table
