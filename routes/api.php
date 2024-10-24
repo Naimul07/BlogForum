@@ -54,6 +54,6 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     //reactions
 
     Route::post('/post/reaction', [HomeController::class, 'reactionStore']);
-    Route::delete('/post/reaction/{id}', [HomeController::class, 'reactionDelete']);
+    Route::delete('/post/reaction/del', [HomeController::class, 'reactionDelete']);
 
 });

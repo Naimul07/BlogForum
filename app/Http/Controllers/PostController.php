@@ -84,7 +84,7 @@ class PostController extends Controller
   //show single post
   public function show($id)
   {
-    $post = Post::with('user','comments','comments.replies')->findOrFail($id);
+    $post = Post::withCount('comments','replies','reactions')->with('user','comments','comments.replies','reactions')->findOrFail($id);
 
     if (!$post)
       /* return response()->json([
