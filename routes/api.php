@@ -2,6 +2,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\CommentController;
 use App\Http\Controllers\MailVerifyController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\ResetPasswordController;
@@ -27,4 +28,10 @@ Route::get('/resent/email',[MailVerifyController::class,'Resentemail'])->middlew
  Route::middleware(['auth:sanctum','verified'])->group(function(){
     Route::apiResource('post',PostController::class);
     // Route::put('/post/{post}',[PostController::class,'update']);
+
+    //comments route
+    Route::put('/post/comments/{id}',[CommentController::class,'update']);
+    Route::post('/post/comments',[CommentController::class,'store']);
+    Route::delete('/post/comments/{id}',[CommentController::class,'destroy']);
+
 }); 

@@ -10,4 +10,8 @@ class PostReaction extends Model
     /** @use HasFactory<\Database\Factories\PostReactionFactory> */
     use HasFactory;
     protected $guarded =[];
+
+    public function post(){
+        return $this->belongsTo(Post::class);
+    }
 }

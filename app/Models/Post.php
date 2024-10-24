@@ -23,4 +23,8 @@ class Post extends Model
     {
         return $this->hasMany(PostReaction::class);
     }
+    public function replies()
+    {
+        return $this->hasMany(CommentReply::class);
+    }
 }

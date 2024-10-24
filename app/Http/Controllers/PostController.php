@@ -6,23 +6,45 @@ use App\Models\Post;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\ValidationException;
 
 class PostController extends Controller
 {
-  /*  
-  GET|HEAD      api/post ........................................... post.index › PostController@index  
-  POST            api/post ........................................... post.store › PostController@store  
-  GET|HEAD        api/post/{post} ...................................... post.show › PostController@show  
-  PUT|PATCH       api/post/{post} .................................. post.update › PostController@update  
-  DELETE          api/post/{post} ................................ post.destroy › PostController@destroy  
- 
+  /*
+  GET|HEAD      api/post ........................................... post.index › PostController@index
+  POST            api/post ........................................... post.store › PostController@store
+  GET|HEAD        api/post/{post} ...................................... post.show › PostController@show
+  PUT|PATCH       api/post/{post} .................................. post.update › PostController@update
+  DELETE          api/post/{post} ................................ post.destroy › PostController@destroy
+
   */
   //return the posts
   public function index()
   {
-    $Post = Post::latest()->get();
+    // $Post = Post::latest()->with('user')->paginate(15);
+    $Post = Post::withCount(['comments', 'reactions'])->latest()->with('user')->paginate(15);
+    /* $posts = DB::table('posts')
+    ->join('users', 'posts.user_id', '=', 'users.id') // Join users table
+    ->leftJoin('comments', 'posts.id', '=', 'comments.post_id') // Left join comments table
+    ->leftJoin('post_reactions', 'posts.id', '=', 'post_reactions.post_id')
+    ->select('posts.id',DB::raw('COUNT(comments.id) as comment_count'))->groupBy('posts.id')->paginate(15); */
+
+    /* $Post = $posts = DB::table('posts')
+      ->select(
+        'posts.*',
+        // DB::raw('(SELECT * FROM users WHERE posts.user_id = users.id) as user_details'),
+        DB::raw('(SELECT COUNT(*) FROM comments WHERE posts.id = comments.post_id) as comments_count'),
+        DB::raw('(SELECT COUNT(*) FROM post_reactions WHERE posts.id = post_reactions.post_id) as reactions_count')
+      )
+      ->orderBy('posts.created_at','desc')
+      ->join('users', 'users.id','=','posts.user_id'); */
+      
+   
+  
+
+
     return response()->json($Post);
   }
 
@@ -33,28 +55,28 @@ class PostController extends Controller
       $attribute = $request->validate([
         'title' => 'required|string|max:255',
         'description' => 'required|string',
-        'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048'
+        'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
       ]);
 
       $attribute['user_id'] = Auth::id();
       $post = Post::create($attribute);
 
       if ($request->hasFile('image')) {
-        
+
         $imagePath = $request->file('image')->store('images', 'public');
         $post->image = $imagePath;
         $post->save();
       }
-      return response()->json($post, 201);
-    } 
-    
-    catch (ValidationException $e) {
+      return response()->json([
+        'post' => $post,
+        'message' => 'Post created Successfully',
+      ], 201);
+    } catch (ValidationException $e) {
 
       return response()->json([
         'message' => "validation failure",
         'error' => $e->errors()
-      ]);
-
+      ], 422);
     }
   }
 
@@ -62,12 +84,13 @@ class PostController extends Controller
   //show single post
   public function show($id)
   {
-    $post = Post::with('user')->findOrFail($id);
-    if(!$post)
-    return response()->json([
-      'message'=>'Post Not found',
-    ]);
+    $post = Post::with('user','comments','comments.replies')->findOrFail($id);
 
+    if (!$post)
+      /* return response()->json([
+      'message'=>'Post Not found',
+    ],404); */
+      $post->increment('views');
     return response()->json($post);
   }
 
@@ -84,9 +107,9 @@ class PostController extends Controller
     try {
 
       $attribute = $request->validate([
-        'title' => 'required|string|max:255',
+        'title' => 'required|string',
         'description' => 'required|string',
-        'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048'
+        'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
       ]);
 
 
@@ -107,7 +130,7 @@ class PostController extends Controller
       return response()->json([
         'message' => "validation failure",
         'error' => $e->errors()
-      ]);
+      ], 422);
     }
   }
 

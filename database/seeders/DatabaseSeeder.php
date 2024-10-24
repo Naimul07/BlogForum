@@ -21,7 +21,7 @@ class DatabaseSeeder extends Seeder
         Post::factory()->count(10)->create();
         Comment::factory()->count(10)->create();
         CommentReply::factory()->count(10)->create();
-        // PostReaction::factory()->count(10)->create();
+        PostReaction::factory()->count(10)->create();
 
         User::factory()->create([
             'firstName' => 'Test',
