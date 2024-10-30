@@ -24,7 +24,7 @@ class PostController extends Controller
   public function index()
   {
     // $Post = Post::latest()->with('user')->paginate(15);
-    $Post = Post::withCount(['comments', 'reactions','replies'])->latest()->with('user')->paginate(15);
+    $Post = Post::withCount(['comments', 'reactions', 'replies'])->latest()->with('user', 'reactions')->paginate(15);
     /* $posts = DB::table('posts')
     ->join('users', 'posts.user_id', '=', 'users.id') // Join users table
     ->leftJoin('comments', 'posts.id', '=', 'comments.post_id') // Left join comments table
@@ -40,9 +40,9 @@ class PostController extends Controller
       )
       ->orderBy('posts.created_at','desc')
       ->join('users', 'users.id','=','posts.user_id'); */
-      
-   
-  
+
+
+
 
 
     return response()->json($Post);
@@ -84,7 +84,7 @@ class PostController extends Controller
   //show single post
   public function show($id)
   {
-    $post = Post::withCount('comments','replies','reactions')->with('user','comments','comments.replies','reactions')->findOrFail($id);
+    $post = Post::withCount('comments', 'replies', 'reactions')->with('user', 'comments', 'comments.replies', 'reactions')->findOrFail($id);
 
     if (!$post)
       /* return response()->json([
@@ -147,5 +147,16 @@ class PostController extends Controller
     }
     $post->delete();
     return response()->json(['message' => 'Post deleted successfully.'], 200);
+  }
+
+  public function search(Request $request)
+  {
+
+    $attribute = $request->validate([
+      'query' => ['min:1'],
+    ]);
+
+    $res = Post::where('title', 'LIKE', '%'. $attribute['query'].'%')->LIMIT(5)->get();
+    return response()->json($res);
   }
 }
