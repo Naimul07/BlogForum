@@ -23,7 +23,7 @@ This is the backend for a BlogForum website, powered by a Laravel-based API. The
 - **Password Reset**: Users can reset their passwords securely through email.
 
 ### Post Management
-- **Homepage & Explore**: Displays popular and recommended posts, organized by categories and tags for easy browsing.
+- **Homepage & Explore**: Displays popular and recommended posts
 - **Create, Edit, and Delete Posts**: Authenticated users can create, update, and delete their own posts.
 - **AutoComplete Search Bar**: Enables quick and predictive search for posts, users, and tags.
 
